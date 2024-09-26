@@ -3,48 +3,95 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Contact Form</title>
+    <title>Hero Form</title>
+    <style>
+      body {
+        font-family: "Sans-Serif", "Arial";
+        background-color: #2c2f33;
+      }
+      h1 {
+        color: white;
+      }
+      form {
+        color: white;
+      }
+      input,
+      textarea {
+        background-color: #23272a;
+        border: none;
+        color: white;
+      }
+      input:hover,
+      textarea:hover {
+        border-color: 2px solid white;
+      }
+      .submit {
+        background-color: #7289da;
+        border-radius: 0;
+        color: white;
+        border: none;
+        width: 200px;
+        height: 40px;
+      }
+      .submit:hover {
+        background-color: #667bc4;
+      }
+      th,
+      tr {
+        width: 100px;
+        text-align: center;
+        color: white;
+        border: 1px solid gray;
+      }
+    </style>
   </head>
   <body>
-    <h1>Contact Form</h1>
+    <h1>Hero Form</h1>
     <form action="/submit-form" method="POST">
       <label for="name">Name:</label>
       <input type="text" id="name" name="name" required /><br /><br />
-      <label for="email">Email:</label>
-      <input type="email" id="email" name="email" required /><br /><br />
-      <label for="message">Message:</label><br />
-      <textarea
-        id="message"
-        name="message"
-        rows="4"
-        cols="50"
-        required
-      ></textarea
+      <label for="universe">Universe:</label>
+      <input type="text" id="universe" name="universe" required /><br /><br />
+      <label for="powers">Power(s):</label><br />
+      <textarea id="powers" name="powers" rows="4" cols="50"></textarea
       ><br /><br />
-      <input type="submit" value="Submit" />
+      <input type="submit" value="Submit" class="submit" />
     </form>
-    <h1>User Management</h1>
+    <h1>Manage Hero</h1>
     <form id="updateForm">
-      <label for="currentName">Current name:</label>
+      <label for="currentName">Current Name:</label>
       <input type="text" id="currentName" required /><br /><br />
-      <label for="currentEmail">Current email:</label>
-      <input type="email" id="currentEmail" required /><br /><br />
-      <label for="newName">New name:</label>
+      <label for="currentUniverse">Current Universe:</label>
+      <input type="text" id="currentUniverse" required /><br /><br />
+      <br /><br />
+      <label for="newName">New Name:</label>
       <input type="text" id="newName" required /><br /><br />
-      <label for="newEmail">New email:</label>
-      <input type="email" id="newEmail" required /><br /><br />
-      <button type="submit">Update User</button>
+      <label for="newUniverse">New Universe:</label>
+      <input type="text" id="newUniverse" required /><br /><br />
+      <label for="newPowers">Add Power(s):</label><br /><br />
+      <textarea id="newPowers" name="newPowers" rows="4" cols="50"></textarea
+      ><br /><br />
+      <button type="submit" class="submit">Update Hero!</button>
     </form>
-    <h1>Show Users</h1>
+    <h1>Delete Hero</h1>
+    <form id="delete-user">
+      <label for="delete-name">Name:</label>
+      <input type="text" id="delete-name" /><br /><br />
+      <label for="delete-universe">Universe:</label>
+      <input type="text" id="delete-universe" /><br /><br />
+      <button type="submit" class="submit">Delete Hero</button>
+    </form>
+    <h1>Show Heroes!</h1>
     <table id="usersTable">
       <thead>
         <tr>
-          <th>User Name</th>
-          <th>User Email</th>
+          <th>Name</th>
+          <th>Universe</th>
+          <th>Power(s):</th>
         </tr>
       </thead>
       <tbody id="userTableBody">
-        <!-- data of users will be rendered here -->
+        <!-- Render heroes here. -->
       </tbody>
     </table>
     <script>
@@ -52,60 +99,96 @@
         .getElementById("updateForm")
         .addEventListener("submit", async (e) => {
           e.preventDefault();
+          //
           const currentName = document.getElementById("currentName").value;
-          const currentEmail = document.getElementById("currentEmail").value;
+          const currentUniverse =
+            document.getElementById("currentUniverse").value;
           const newName = document.getElementById("newName").value;
-          const newEmail = document.getElementById("newEmail").value;
+          const newUniverse = document.getElementById("newUniverse").value;
+          //
           try {
             const response = await fetch(
-              `/update-user/${currentName}/${currentEmail}`,
+              `/update-user/${currentName}/${currentUniverse}`,
               {
                 method: "PUT",
                 headers: {
                   "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ newName, newEmail }),
+                body: JSON.stringify({ newName, newUniverse }),
               }
             );
+            //
             const data = await response.json();
-            console.log(data);
+            //
             renderUsers();
-            // alert("Message is: " + data.message);
+            //
           } catch (error) {
             alert("Error updating user: " + error.message);
           }
         });
+
+      document
+        .getElementById("delete-user")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          //
+          const name = document.getElementById("delete-name").value;
+          const universe = document.getElementById("delete-universe").value;
+          //
+          try {
+            const response = await fetch(`/user/${name}/${universe}`, {
+              method: "DELETE",
+            });
+            //
+            if (!response.ok) {
+              throw new Error("Problem fetching delete endpoint.");
+            }
+            const data = await response.text();
+            //
+            renderUsers();
+            //
+          } catch (error) {
+            console.error("There was a problem." + error.message);
+          }
+        });
+      //
       async function fetchUsers() {
         try {
           const response = await fetch("/users");
+          //
           if (!response.ok) {
             throw new Error("Error fetching users. Response not ok");
           }
-          // there could be an error getting response/fetching the endpoint
-          console.log(response);
+          //
           const users = await response.json();
-          // there could be an error parsing the response
-          // console.log(users);
+          //
           return users;
+          //
         } catch (error) {
-          console.error("There was a problem");
+          console.error("There was a problem ");
           console.error(error);
         }
       }
 
       async function renderUsers() {
         const tableBody = document.getElementById("userTableBody");
+        //
         tableBody.innerHTML = "";
+        //
         try {
           const users = await fetchUsers();
+          //
           if (Array.isArray(users) && users.length > 0) {
             users.forEach((user) => {
-              const row = `<tr><td>${user.name}</td><td>${user.email}</td></tr>`;
+              const row = `<tr><td>${user.name}</td><td>${
+                user.universe
+              }</td><td>${user.powers.join(", ")}</td></tr>`;
               tableBody.innerHTML += row;
             });
           }
         } catch (error) {}
       }
+      //
       document.addEventListener("DOMContentLoaded", renderUsers);
     </script>
   </body>
