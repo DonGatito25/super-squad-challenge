@@ -1,17 +1,1 @@
-[
-  {
-    "name": "Foo",
-    "universe": "Foo",
-    "powers": [
-      "Foo"
-    ]
-  },
-  {
-    "name": "Billy",
-    "universe": "DC",
-    "powers": [
-      "",
-      ""
-    ]
-  }
-]
+[]

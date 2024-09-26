@@ -138,6 +138,10 @@
           try {
             const response = await fetch(`/user/${name}/${universe}`, {
               method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ name, universe }),
             });
             //
             if (!response.ok) {
@@ -145,11 +149,10 @@
             }
             const data = await response.text();
             //
-            renderUsers();
-            //
           } catch (error) {
-            console.error("There was a problem." + error.message);
+            console.error("There was a problem. " + error.message);
           }
+          renderUsers();
         });
       //
       async function fetchUsers() {

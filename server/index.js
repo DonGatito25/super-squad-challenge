@@ -93,13 +93,13 @@ app.put('/update-user/:currentName/:currentUniverse', async (req, res) => {
     };
 });
 
-app.delete('/user/:name/:email', async (req, res) => {
+app.delete('/user/:name/:universe', async (req, res) => {
     try {
         const { name, universe } = req.params;
         let users = [];
 
         try {
-            const data = await fs.readFile(data, 'utf8');
+            const data = await fs.readFile(dataPath, 'utf8');
             users = JSON.parse(data);
         } catch (error) {
             return res.status(404).send('File data not found.');
